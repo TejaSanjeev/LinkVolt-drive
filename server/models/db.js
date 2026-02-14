@@ -1,9 +1,9 @@
+// ... imports remain the same
 import sqlite3 from 'sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Recreate __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -11,11 +11,8 @@ const sqlite = sqlite3.verbose();
 const dbPath = path.resolve(__dirname, 'linkvault.db');
 
 const db = new sqlite.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-  } else {
-    console.log('Connected to the SQLite database.');
-  }
+  if (err) console.error(err.message);
+  else console.log('Connected to SQLite database.');
 });
 
 db.serialize(() => {
@@ -25,7 +22,10 @@ db.serialize(() => {
     content TEXT,
     originalName TEXT,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    expiresAt DATETIME
+    expiresAt DATETIME,
+    views INTEGER DEFAULT 0,
+    maxViews INTEGER,
+    password TEXT  -- New Column
   )`);
 });
 

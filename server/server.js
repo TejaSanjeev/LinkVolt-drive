@@ -5,6 +5,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import apiRoutes from './routes/api.js';
+import startCleanupJob from './services/cleanupService.js'; // <--- Import this
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +20,9 @@ const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir);
 }
+
+// Start the background job
+startCleanupJob(); // <--- Call this function
 
 app.use('/api', apiRoutes);
 
