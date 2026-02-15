@@ -12,11 +12,10 @@ const View = () => {
   const [isLocked, setIsLocked] = useState(false);
   const [password, setPassword] = useState('');
   
-  // 🛡️ Prevent Double-Firing in React Strict Mode
+  
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    // If we already tried to fetch, don't do it again
     if (hasFetched.current) return;
     hasFetched.current = true;
 
@@ -25,10 +24,6 @@ const View = () => {
 
   const fetchContent = async (pwd = '') => {
     try {
-      // 1. First, try to "Verify" (POST) immediately
-      // If no password is sent, backend will:
-      //    - If public: Return content & increment view (Success)
-      //    - If protected: Return 401 error (Need Password)
       const res = await axios.post(`http://localhost:5000/api/${id}/verify`, { password: pwd });
       
       // Success! Show content
@@ -38,13 +33,12 @@ const View = () => {
 
     } catch (err) {
       if (err.response?.status === 401) {
-        // 401 means Password Required -> Show Lock Screen
         setIsLocked(true);
         setLoading(false);
-        // If the user typed a wrong password, show error
+        
         if (pwd) setError('Incorrect Password');
       } else {
-        // Real Error (Expired / Not Found)
+        
         setError(err.response?.data?.error || 'Link expired or not found');
         setLoading(false);
       }
@@ -55,11 +49,11 @@ const View = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    // Force a re-fetch with the password
+    
     fetchContent(password);
   };
 
-  // 1. LOADING STATE
+  
   if (loading) return (
     <div className="flex justify-center items-center h-[60vh]">
         <div className="relative w-24 h-24">
@@ -69,7 +63,7 @@ const View = () => {
     </div>
   );
 
-  // 2. ERROR STATE (Link Gone)
+  
   if (error && !isLocked) return (
     <div className="glass-panel max-w-lg mx-auto p-10 rounded-3xl text-center border border-red-900/50 bg-red-900/10 mt-10 shadow-2xl">
       <div className="text-6xl mb-6">💔</div>
@@ -79,7 +73,7 @@ const View = () => {
     </div>
   );
 
-  // 3. LOCKED STATE (Password Prompt)
+  
   if (isLocked) return (
     <div className="glass-panel max-w-md mx-auto p-10 rounded-3xl text-center border border-yellow-600/30 mt-10 shadow-2xl relative overflow-hidden">
       <div className="text-6xl mb-6">🔒</div>
@@ -103,7 +97,7 @@ const View = () => {
     </div>
   );
 
-  // 4. CONTENT DISPLAY (Auto-Revealed)
+  
   return (
     <div className="max-w-5xl mx-auto glass-panel rounded-2xl p-8 md:p-12 shadow-2xl border border-gray-700/50 mt-6 relative overflow-hidden animate-fade-in-up">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-700 pb-6 mb-8 gap-4">

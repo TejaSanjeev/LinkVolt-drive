@@ -117,7 +117,7 @@ const Upload = ({ token }) => {
 
             <div>
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Expires At</label>
-                {/* 🔧 FIX 1: Added [color-scheme:dark] to make the calendar icon white */}
+                
                 <input
                     type="datetime-local"
                     min={getMinDateTime()}
@@ -158,7 +158,7 @@ const Upload = ({ token }) => {
 
             <div>
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Password (Optional)</label>
-                {/* 🔧 FIX 2: Removed placeholder="••••••" so it looks empty */}
+                
                 <input
                     type="password"
                     value={password}

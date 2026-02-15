@@ -17,20 +17,17 @@ export const register = async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // 🔴 REMOVED: const id = generateUniqueId(); 
-  // We do not generate an ID manually because your schema uses AUTOINCREMENT.
-
-  // 🟢 UPDATED SQL: Removed 'id' column and value.
+  
   db.run(`INSERT INTO users (username, password) VALUES (?, ?)`, 
     [username, hashedPassword], 
     function(err) {
       if (err) {
-          // Check if the error is actually about the username
+          
           if (err.message.includes('UNIQUE constraint failed')) {
               return res.status(400).json({ error: 'Username already exists' });
           }
           
-          // Log other errors (like database locks) so you can see them
+          
           console.error("Registration Error:", err.message);
           return res.status(500).json({ error: 'Database error occurred' });
       }
@@ -52,7 +49,7 @@ export const login = (req, res) => {
         return res.status(400).json({ error: 'Invalid credentials' });
     }
 
-    // Generate JWT Token
+    
     const token = jwt.sign(
       { id: user.id, username: user.username }, 
       process.env.JWT_SECRET, 
@@ -86,7 +83,7 @@ export const deleteMyUpload = (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
-  // 1. Find the file first to check ownership and get the Supabase filename
+  
   db.get(`SELECT * FROM uploads WHERE id = ? AND userId = ?`, [id, userId], async (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!row) return res.status(404).json({ error: 'Content not found or unauthorized' });
@@ -95,17 +92,17 @@ export const deleteMyUpload = (req, res) => {
         const { error } = await supabase
             .storage
             .from('uploads')
-            .remove([row.content]); // row.content stores the unique filename
+            .remove([row.content]); 
 
         if (error) {
             console.error("⚠️ Supabase Removal Warning:", error.message);
-            // We continue to delete the DB record so the dashboard stays in sync
+            
         } else {
             console.log(`✅ Supabase file deleted: ${row.content}`);
         }
     }
 
-    // 2. Delete the record from the SQLite Database
+   
     db.run(`DELETE FROM uploads WHERE id = ?`, [id], (err) => {
       if (err) {
           return res.status(500).json({ error: err.message });
